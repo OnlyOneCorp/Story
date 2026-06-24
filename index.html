@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tell Me a Story — a one-minute story, any time they ask</title>
+<meta name="description" content="One tap, one little story. A one-minute bedtime story for whenever a child asks 'tell me a story.' English and Korean." />
+
+<!-- ============================================================= -->
+<!-- 1) GOOGLE ANALYTICS (GA4) — visitor + click tracking          -->
+<!--    Replace G-XXXXXXXXXX below with your real Measurement ID.   -->
+<!--    Leave it as-is and tracking is simply skipped (no errors).  -->
+<!-- ============================================================= -->
+<script>
+  window.SITE_CONFIG = {
+    gaId: "G-XXXXXXXXXX",          // <-- your GA4 Measurement ID
+    affiliate: {
+      // Use {q} where the book search keyword should go. Each story has its own keyword,
+      // so the button links to a book *like that story*. Add your own affiliate tag.
+      amazon:  "https://www.amazon.com/s?k={q}",                 // + "&tag=YOURTAG-20"
+      coupang: "https://www.coupang.com/np/search?q={q}"         // wrap with your Coupang Partners deep link
+    }
+  };
+  // Load GA only if a real ID was set.
+  (function () {
+    var id = window.SITE_CONFIG.gaId;
+    if (!id || id.indexOf("XXXX") !== -1) return;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag("js", new Date());
+    gtag("config", id);
+  })();
+  function track(event, params) {
+    if (typeof window.gtag === "function") window.gtag("event", event, params || {});
+  }
+</script>
+
+<style>
+  :root {
+    --bg:        #F2F0EB;
+    --surface:   #FFFFFF;
+    --ink:       #1D1D1F;
+    --muted:     #6E6E73;
+    --hairline:  rgba(0,0,0,0.08);
+    --accent-a:  #FF8E5E;
+    --accent-b:  #FF5C8A;
+    --accent:    #FF6F61;
+    --shadow:    0 30px 70px -30px rgba(40,20,30,0.30), 0 8px 24px -12px rgba(40,20,30,0.18);
+    --glow:      radial-gradient(120% 80% at 50% -10%, rgba(255,142,94,0.22), rgba(255,92,138,0.10) 45%, transparent 70%);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:       #0F0E11;
+      --surface:  #1A191D;
+      --ink:      #F5F5F7;
+      --muted:    #9A9AA0;
+      --hairline: rgba(255,255,255,0.10);
+      --shadow:   0 30px 70px -28px rgba(0,0,0,0.7), 0 8px 24px -12px rgba(0,0,0,0.5);
+      --glow:     radial-gradient(120% 80% at 50% -10%, rgba(255,142,94,0.20), rgba(255,92,138,0.10) 45%, transparent 70%);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+                 "Apple SD Gothic Neo", system-ui, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    background-image: var(--glow);
+    background-repeat: no-repeat;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 22px 22px 40px;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding-top: 6px;
+  }
+  .brand {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+  }
+
+  .segmented {
+    display: inline-flex;
+    background: var(--hairline);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .segmented button {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .segmented button.active {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 0 28px;
+  }
+
+  /* empty / prompt state */
+  .prompt {
+    font-size: clamp(1.7rem, 5.5vw, 2.7rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+  }
+  .prompt .quiet { color: var(--muted); }
+  .subprompt {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 1.02rem;
+  }
+
+  /* story card */
+  .card {
+    width: 100%;
+    background: var(--surface);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    padding: 38px 30px 30px;
+    text-align: left;
+  }
+  .card .token {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .card .title {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    line-height: 1.2;
+  }
+  .card .body {
+    font-size: clamp(1.12rem, 2.6vw, 1.35rem);
+    line-height: 1.78;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .card-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .icon-btn:hover { color: var(--ink); border-color: var(--ink); }
+  .icon-btn.speaking { color: var(--accent); border-color: var(--accent); }
+  .icon-btn.speaking .wave { animation: wave 1s ease-in-out infinite; }
+  @keyframes wave { 0%,100% { transform: scaleY(.6); } 50% { transform: scaleY(1.15); } }
+
+  .cta-row {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.02rem;
+    text-decoration: none;
+  }
+  .cta:hover { text-decoration: underline; }
+
+  /* ---------- Big button ---------- */
+  .draw {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px auto 0;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.12rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    padding: 18px 34px;
+    border-radius: 999px;
+    box-shadow: 0 14px 30px -10px rgba(255,92,138,0.55);
+    transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  .draw:hover { filter: brightness(1.04); box-shadow: 0 18px 38px -10px rgba(255,92,138,0.6); }
+  .draw:active { transform: scale(0.97); }
+
+  /* ---------- Footer ---------- */
+  .foot {
+    flex-shrink: 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    padding-top: 26px;
+  }
+  .foot .count { color: var(--ink); font-weight: 600; }
+  .foot .disclosure { margin-top: 6px; opacity: 0.85; }
+  .foot .contact { margin-top: 6px; }
+  .foot .contact a {
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0.7;
+    border-bottom: 1px solid transparent;
+    transition: opacity .2s ease, border-color .2s ease;
+  }
+  .foot .contact a:hover { opacity: 1; border-bottom-color: currentColor; }
+
+  /* ---------- Motion ---------- */
+  .reveal { animation: reveal .5s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; }
+    .icon-btn.speaking .wave { animation: none; }
+    .draw { transition: none; }
+  }
+
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand"><span class="dot" aria-hidden="true"></span><span id="brand">Tell Me a Story</span></div>
+      <div class="segmented" role="group" aria-label="Language">
+        <button id="lang-en" class="active" type="button">English</button>
+        <button id="lang-ko" type="button">한국어</button>
+      </div>
+    </header>
+
+    <main class="stage">
+      <!-- Empty state -->
+      <div id="empty">
+        <div class="prompt" id="prompt-line"></div>
+        <div class="subprompt" id="sub-line"></div>
+      </div>
+
+      <!-- Story card (hidden until first draw) -->
+      <article class="card" id="card" style="display:none;">
+        <span class="token" id="story-token" aria-hidden="true"></span>
+        <h1 class="title" id="story-title"></h1>
+        <p class="body" id="story-body"></p>
+        <div class="card-tools">
+          <button class="icon-btn" id="speak-btn" type="button">
+            <span class="wave" aria-hidden="true">🔊</span><span id="speak-label"></span>
+          </button>
+        </div>
+        <div class="cta-row">
+          <a class="cta" id="cta" href="#" target="_blank" rel="noopener sponsored"></a>
+        </div>
+      </article>
+
+      <button class="draw" id="draw" type="button"></button>
+    </main>
+
+    <footer class="foot">
+      <div><span class="count" id="count">0</span> <span id="count-label"></span></div>
+      <div class="disclosure" id="disclosure"></div>
+      <div class="contact"><a id="contact" href="mailto:onlyonecorpceo@gmail.com"></a></div>
+    </footer>
+  </div>
+
+<script>
+/* ================================================================
+   2) STORIES  —  add as many as you like (aim for 100).
+   Each entry: { token, en:{title,text}, ko:{title,text} }
+   ~1 minute when read aloud (about 90–110 words).
+   ================================================================ */
+const STORIES = [
+  /* ── 한국 전래동화 ── */
+  { token:"🌗", shop:{en:"The Sun and the Moon Korean folktale picture book", ko:"해와 달이 된 오누이 그림책"},
+    en:{title:"The Sun and the Moon", text:"Long ago, a brother and sister were home alone when a hungry tiger came knocking, pretending to be their mother. The clever children climbed a tall tree to escape. \"How did you get up there?\" growled the tiger. \"With oil on our hands!\" teased the sister, and the slipping tiger tumbled down. The children prayed to the sky, and a strong rope came dropping down to lift them up, up, into the heavens. There the brother became the bright Sun and the sister the gentle Moon. And to this day they watch over us, taking turns to light the world."},
+    ko:{title:"해와 달이 된 오누이", text:"옛날 옛적, 오누이가 집에 둘만 있는데 배고픈 호랑이가 엄마인 척 문을 두드렸어요. 영리한 오누이는 높은 나무 위로 올라가 몸을 피했지요. \"거긴 어떻게 올라갔니?\" 호랑이가 으르렁댔어요. \"손에 기름을 발랐지!\" 누이가 놀리자, 호랑이는 주르륵 미끄러져 굴러떨어졌어요. 오누이가 하늘에 빌자, 튼튼한 동아줄이 스르륵 내려와 둘을 하늘 높이높이 끌어 올렸지요. 그곳에서 오빠는 밝은 해님이 되고, 누이는 다정한 달님이 되었어요. 그래서 지금도 둘은 번갈아 가며 세상을 밝히며 우리를 지켜본답니다."}},
+
+  { token:"🐦", shop:{en:"Heungbu and Nolbu Korean folktale picture book", ko:"흥부와 놀부 그림책"},
+    en:{title:"Heungbu and the Swallow", text:"Kind Heungbu was poor, but greedy Nolbu was rich. One day Heungbu found a swallow with a broken leg and gently bandaged it. The next spring the grateful swallow returned with a magic seed. Heungbu planted it, and from the giant gourds spilled gold and treasure! When jealous Nolbu heard, he snapped a swallow's leg on purpose and got his own seed. But his gourds burst open with nothing but trouble. In the end, kind Heungbu shared his riches even with his brother. Goodness, the swallow knew, always finds its way back home."},
+    ko:{title:"흥부와 제비", text:"마음씨 착한 흥부는 가난했지만, 욕심 많은 놀부는 부자였어요. 어느 날 흥부는 다리 다친 제비를 발견해 살며시 싸매 주었지요. 이듬해 봄, 고마운 제비가 박씨 하나를 물어다 줬어요. 흥부가 그 씨를 심었더니, 커다란 박에서 금은보화가 와르르 쏟아졌어요! 그 소식을 들은 놀부는 일부러 제비 다리를 부러뜨려 박씨를 얻었지요. 하지만 놀부의 박에서는 온갖 골칫거리만 펑펑 터져 나왔어요. 결국 착한 흥부는 형 놀부에게도 재물을 나눠 주었답니다. 착한 마음은 언제나 집으로 돌아온다는 걸, 제비는 알고 있었어요."}},
+
+  { token:"👟", shop:{en:"Kongjwi Patjwi Korean Cinderella picture book", ko:"콩쥐 팥쥐 그림책"},
+    en:{title:"Kongjwi and the Magic Helpers", text:"Gentle Kongjwi was given impossible chores by her stepmother: fill a cracked jar, hull a mountain of rice, weave cloth all in one day. But she was never truly alone. A spotted toad sat in the cracked jar to plug the hole, a flock of sparrows hulled the rice in a flurry of wings, and a heavenly maiden wove the cloth in a blink. With her kindness rewarded, Kongjwi went to the village festival after all — and there she met a kind magistrate who saw her good heart. Quiet kindness, it turns out, never goes unnoticed."},
+    ko:{title:"콩쥐와 신기한 도우미들", text:"착한 콩쥐는 새엄마에게 도무지 못 할 일들을 떠맡았어요. 깨진 항아리에 물 채우기, 산더미 같은 벼 찧기, 하루 만에 베 짜기까지요. 하지만 콩쥐는 결코 혼자가 아니었어요. 두꺼비가 깨진 항아리 속에 들어가 구멍을 막아 주고, 참새 떼가 날갯짓하며 벼를 후두둑 찧어 주고, 하늘에서 내려온 선녀가 눈 깜짝할 새 베를 짜 주었지요. 착한 마음을 보답받은 콩쥐는 마침내 마을 잔치에 갔고, 그곳에서 콩쥐의 고운 마음을 알아본 다정한 원님을 만났답니다. 조용한 친절은 결코 헛되지 않는 법이에요."}},
+
+  { token:"🧚", shop:{en:"The Fairy and the Woodcutter Korean folktale picture book", ko:"선녀와 나무꾼 그림책"},
+    en:{title:"The Fairy and the Woodcutter", text:"A poor woodcutter once saved a deer from a hunter. In thanks, the deer whispered a secret: fairies bathed in a mountain pool by moonlight. The woodcutter watched, amazed, as they floated down on rainbow robes. He befriended one gentle fairy, and they were married and happy for many years, with children they both adored. When at last she wished to visit her home in the sky, he helped her go — and the kind deer's blessing meant they could always find their way back to one another. Kindness given freely returns in wondrous ways."},
+    ko:{title:"선녀와 나무꾼", text:"가난한 나무꾼이 사냥꾼에게 쫓기던 사슴을 구해 주었어요. 고마운 사슴은 비밀을 살짝 일러 주었지요. 달밤이면 선녀들이 산속 연못에 목욕하러 내려온다고요. 나무꾼은 무지개 옷자락을 펄럭이며 사뿐히 내려오는 선녀들을 보고 감탄했어요. 그러다 마음씨 고운 선녀와 정이 들어 부부가 되었고, 사랑스러운 아이들과 오래도록 행복하게 살았지요. 마침내 선녀가 하늘나라 집이 그리워졌을 때, 나무꾼은 기꺼이 보내 주었어요. 착한 사슴의 축복 덕분에 둘은 언제든 서로를 다시 찾을 수 있었답니다. 아낌없이 베푼 친절은 신기한 모습으로 되돌아오는 거예요."}},
+
+  { token:"🪓", shop:{en:"The Golden Axe honest woodcutter folktale picture book", ko:"금도끼 은도끼 그림책"},
+    en:{title:"The Golden Axe", text:"A woodcutter dropped his old iron axe into a deep pond. As he wept, a mountain spirit rose from the water holding a shining golden axe. \"Is this yours?\" \"No,\" said the honest woodcutter. The spirit lifted a silver axe. \"Nor that one.\" Then came his plain iron axe. \"Yes! That's mine.\" Delighted by his honesty, the spirit gave him all three. A greedy neighbor tried the same trick, but lied and claimed the golden axe at once. The spirit vanished — and so did his axe. Honesty, the woodcutter learned, is worth more than gold."},
+    ko:{title:"금도끼 은도끼", text:"한 나무꾼이 낡은 쇠도끼를 깊은 연못에 풍덩 빠뜨렸어요. 엉엉 우는데, 산신령이 물속에서 번쩍이는 금도끼를 들고 솟아올랐지요. \"이게 네 도끼냐?\" \"아닙니다.\" 정직한 나무꾼이 답했어요. 산신령이 은도끼를 들어 올렸어요. \"이것도 아니에요.\" 그제야 낡은 쇠도끼가 나왔지요. \"네! 그게 제 거예요.\" 정직함에 감동한 산신령은 세 도끼를 모두 주었어요. 욕심 많은 이웃이 똑같이 흉내 냈지만, 냉큼 거짓말로 금도끼가 제 것이라 우겼지요. 산신령은 사라졌고, 그의 도끼도 함께 사라졌어요. 정직이 금보다 값지다는 걸 나무꾼은 알았답니다."}},
+
+  { token:"🐢", shop:{en:"The Rabbit and the Turtle Korean folktale Byeoljubujeon picture book", ko:"별주부전 토끼와 자라 그림책"},
+    en:{title:"The Rabbit and the Dragon King", text:"Deep under the sea, the Dragon King was ill, and only a rabbit's liver could cure him. A loyal turtle swam to shore and sweet-talked a rabbit, promising riches in the underwater palace. Curious, the rabbit hopped onto his back. But when he learned the truth — that they wanted his liver! — the clever rabbit grinned. \"Oh dear, I left my liver drying on a rock back home!\" The worried Dragon King sent him back to fetch it. The moment his paws touched land, the rabbit bounded away laughing. Quick thinking can outwit even a king."},
+    ko:{title:"토끼와 용왕님", text:"깊은 바닷속, 용왕님이 병이 들었는데 토끼의 간만이 약이 될 수 있었어요. 충성스러운 자라가 뭍으로 헤엄쳐 나와, 용궁의 보물을 약속하며 토끼를 살살 꾀었지요. 호기심 많은 토끼는 자라 등에 폴짝 올라탔어요. 그런데 자기 간을 노린다는 진실을 알게 되자, 영리한 토끼는 씩 웃었어요. \"이런, 제 간을 집에 있는 바위에 널어 말리고 왔지 뭐예요!\" 걱정된 용왕님은 토끼를 도로 보내 간을 가져오게 했지요. 발이 뭍에 닿는 순간, 토끼는 깔깔 웃으며 깡충깡충 달아났답니다. 재치는 임금님도 이길 수 있어요."}},
+
+  { token:"🐯", shop:{en:"The Tiger and the Dried Persimmon Korean folktale picture book", ko:"호랑이와 곶감 그림책"},
+    en:{title:"The Tiger and the Dried Persimmon", text:"One night a hungry tiger crept up to a house where a baby was crying. The mother said, \"Hush, a fox is coming!\" but the baby cried on. \"A bear is coming!\" Still the baby wailed. Then she said, \"Here's a dried persimmon,\" and the baby went silent at once. The tiger gasped. \"A dried persimmon? It silenced the child when even I could not! It must be a fearsome beast greater than me!\" And the mighty tiger turned tail and fled into the night, terrified of a sweet little dried fruit."},
+    ko:{title:"호랑이와 곶감", text:"어느 밤, 배고픈 호랑이가 아기가 우는 집으로 살금살금 다가갔어요. 엄마가 말했어요. \"쉿, 여우 온다!\" 그래도 아기는 울었지요. \"곰 온다!\" 그래도 아기는 앙앙 울었어요. 그때 엄마가 \"여기 곶감 있다\" 하자, 아기가 단번에 뚝 그쳤지요. 호랑이는 깜짝 놀랐어요. \"곶감? 나도 못 그치게 한 울음을 단번에 그치게 하다니! 나보다 무시무시한 짐승이 틀림없어!\" 그러고는 그 용맹한 호랑이가 꽁지가 빠지게 밤 속으로 달아났답니다. 달콤한 곶감 하나에 겁을 잔뜩 먹고 말이에요."}},
+
+  { token:"👴", shop:{en:"The Old Man with the Lump Korean folktale picture book", ko:"혹부리 영감 그림책"},
+    en:{title:"The Old Man with the Singing Lump", text:"A kind old man with a lump on his cheek got caught by nightfall in the woods and sang to keep himself brave. Goblins gathered, enchanted. \"Where does such beautiful singing come from?\" they asked. \"Why, from this lump!\" he joked. The goblins traded heaps of gold to take the \"singing lump\" away — and off it came, leaving him richer and lump-free! A greedy old man tried the same trick, but the goblins had been fooled once. \"You won't trick us twice!\" they cried, and stuck the first lump right back onto his other cheek."},
+    ko:{title:"노래 나오는 혹, 혹부리 영감", text:"볼에 혹이 달린 마음씨 좋은 영감이 숲에서 밤을 맞아, 무섭지 않으려고 노래를 불렀어요. 도깨비들이 홀린 듯 모여들었지요. \"이렇게 고운 노래가 어디서 나오는 거요?\" 도깨비들이 물었어요. \"아, 이 혹에서 나온다오!\" 영감이 농담했지요. 도깨비들은 그 \"노래 혹\"을 가져가는 대가로 금을 잔뜩 주었고, 혹은 쏙 떨어졌어요. 부자가 되고 혹까지 사라진 거예요! 욕심 많은 영감이 똑같이 흉내 냈지만, 한 번 속은 도깨비들이 외쳤어요. \"두 번은 안 속는다!\" 그러고는 먼젓번 혹을 그의 다른 쪽 볼에 철썩 붙여 버렸답니다."}},
+
+  { token:"🐦‍⬛", shop:{en:"The Grateful Magpie Korean folktale picture book", ko:"은혜 갚은 까치 그림책"},
+    en:{title:"The Grateful Magpie", text:"A traveler walking through the mountains saw a great snake about to swallow a nest of baby magpies. He drew his bow and saved them. That night, lost and weary, he found shelter in an old temple — but a serpent coiled around him, the mate of the one he'd slain. \"Free yourself only if the temple bell rings by dawn,\" she hissed. The man despaired; no one was there to ring it. Then — bong! — the bell rang out. At its base lay the mother magpie, who had given everything to save the one who once saved her children."},
+    ko:{title:"은혜 갚은 까치", text:"산길을 걷던 나그네가 커다란 구렁이가 까치 새끼들을 삼키려는 걸 보았어요. 활을 쏘아 새끼들을 구해 주었지요. 그날 밤, 길을 잃고 지친 나그네는 낡은 절에서 묵게 되었는데, 죽은 구렁이의 짝이 그의 몸을 칭칭 감았어요. \"새벽까지 종이 울리면 살려 주마.\" 구렁이가 쉭쉭댔지요. 종을 칠 사람이 아무도 없어 나그네는 절망했어요. 그런데 그때, 뎅! 종이 울렸어요. 종 아래엔 어미 까치가 쓰러져 있었지요. 제 새끼를 구해 준 이를 살리려고 온몸을 바쳐 종에 부딪힌 거였어요. 은혜는 이렇게 되갚아지는 거랍니다."}},
+
+  { token:"🐌", shop:{en:"The Snail Bride Korean folktale picture book", ko:"우렁각시 그림책"},
+    en:{title:"The Snail Bride", text:"A lonely young farmer once sighed over his rice field, \"Who would ever share this harvest with me?\" A tiny voice answered, \"I would!\" Puzzled, he found a small snail and brought it home in a water jar. From then on, each evening he returned to a warm meal cooked by unseen hands. One day he hid and watched — and out of the jar stepped a gentle young woman, the snail in disguise. They were soon wed and lived happily, tending their field together. Sometimes the kindest blessings arrive in the smallest, most surprising packages."},
+    ko:{title:"우렁각시", text:"외로운 젊은 농부가 논을 보며 한숨지었어요. \"이 농사 거둔 걸 누구랑 나눠 먹누?\" 그러자 작은 목소리가 답했어요. \"저랑요!\" 어리둥절한 농부는 작은 우렁이를 발견해 물 단지에 담아 집에 가져왔지요. 그날부터 저녁마다 누군가 차려 놓은 따뜻한 밥상이 그를 맞았어요. 어느 날 몰래 숨어 지켜보니, 단지 속에서 곱고 어진 색시가 걸어 나왔어요. 우렁이가 변한 우렁각시였지요. 둘은 곧 부부가 되어 함께 논을 가꾸며 행복하게 살았답니다. 가장 다정한 복은 때로 가장 작고 놀라운 모습으로 찾아오는 거예요."}},
+
+  { token:"🍲", shop:{en:"The Red Bean Porridge Granny and the Tiger Korean folktale picture book", ko:"팥죽 할머니와 호랑이 그림책"},
+    en:{title:"The Porridge Granny and the Tiger", text:"A tiger wanted to gobble up an old granny, but she begged, \"Wait until autumn, when I've cooked my red-bean porridge.\" When the day came, she wept — so her little friends helped. A chestnut popped in the fire to burn the tiger's eye, an awl poked him, a turtle bit him, a pat of dung made him slip, and a woven mat rolled him up while an A-frame carrier tossed him into the river! Together, the smallest helpers saved the granny. No one is too little to help — and many small friends can topple a tiger."},
+    ko:{title:"팥죽 할머니와 호랑이", text:"호랑이가 할머니를 잡아먹으려 하자, 할머니가 사정했어요. \"가을에 팥죽 한 솥 쑤거든 그때 오너라.\" 그날이 되어 할머니가 엉엉 울자, 작은 친구들이 도와주었어요. 알밤이 아궁이에서 탁 튀어 호랑이 눈을 지지고, 송곳이 콕 찌르고, 자라가 콱 물고, 쇠똥이 미끌 넘어뜨리고, 멍석이 둘둘 말고, 지게가 번쩍 들어 호랑이를 강물에 풍덩 던졌지요! 가장 작은 친구들이 힘을 모아 할머니를 구한 거예요. 누구도 돕기엔 너무 작지 않아요. 작은 친구들이 모이면 호랑이도 넘어뜨릴 수 있답니다."}},
+
+  { token:"🪄", shop:{en:"The Goblin's Magic Club dokkaebi Korean folktale picture book", ko:"도깨비 방망이 그림책"},
+    en:{title:"The Goblin's Magic Club", text:"A kind boy gathering firewood shared his last chestnut with the forest. When night fell, he hid in an empty house where goblins came to feast. They pulled out a magic club and shouted, \"Gold, come out — tok! Rice, come out — tak!\" Treasures rained down. Startled, the boy cracked a chestnut — crunch! The goblins thought the house was falling and fled, leaving the magic club behind. The boy shared his new riches with the whole village. A greedy neighbor tried it too, but the goblins were waiting — and chased him off with a good fright."},
+    ko:{title:"도깨비 방망이", text:"나무하러 간 착한 소년이 마지막 알밤을 숲에 나눠 두었어요. 밤이 되자 빈집에 숨었는데, 도깨비들이 잔치를 벌이러 왔지요. 도깨비들은 방망이를 꺼내 외쳤어요. \"금 나와라, 뚝딱! 쌀 나와라, 뚝딱!\" 그러자 보물이 쏟아졌어요. 깜짝 놀란 소년이 알밤을 깨물자, 와드득! 도깨비들은 집이 무너지는 줄 알고 방망이를 두고 달아났지요. 소년은 새로 얻은 재물을 온 마을과 나눴어요. 욕심 많은 이웃이 따라 했지만, 이번엔 도깨비들이 기다리고 있다가 혼쭐을 내어 쫓아 보냈답니다."}},
+
+  { token:"💫", shop:{en:"The Cowherd and the Weaver Girl Chilseok folktale picture book", ko:"견우와 직녀 그림책"},
+    en:{title:"The Cowherd and the Weaver", text:"In the sky lived Jiknyeo, a weaver of starlight, and Gyeonu, a cowherd. They fell so deeply in love that they forgot all their work, and the heavens grew dim. So they were placed on opposite banks of the Milky Way, allowed to meet only once a year. But the river of stars was too wide to cross! Seeing their tears, the magpies and crows of the world flew up and joined wing to wing, building a feathered bridge. Once a year, on that bridge, the two lovers meet again — and the gentle summer rain is said to be their happy tears."},
+    ko:{title:"견우와 직녀", text:"하늘나라에 별빛을 짜는 직녀와 소를 치는 견우가 살았어요. 둘은 너무 깊이 사랑한 나머지 일을 까맣게 잊었고, 하늘이 어두워졌지요. 그래서 둘은 은하수 양쪽 기슭으로 갈라져, 일 년에 단 한 번만 만날 수 있게 되었어요. 그런데 별들의 강이 너무 넓어 건널 수가 없었지요! 그 눈물을 본 세상의 까치와 까마귀들이 하늘로 날아올라 날개를 잇대어 다리를 놓아 주었어요. 일 년에 한 번, 그 오작교에서 두 사람은 다시 만난답니다. 여름날 내리는 보슬비는 둘이 기뻐 흘리는 눈물이래요."}},
+
+  { token:"🌾", shop:{en:"The Devoted Brothers rice stack Korean folktale picture book", ko:"의좋은 형제 그림책"},
+    en:{title:"The Devoted Brothers", text:"Two brothers harvested their rice and split it evenly into equal stacks. But that night, the older brother thought, \"My brother has a family to feed — he needs more.\" So he secretly carried some of his own rice to his brother's pile. At the very same time, the younger brother thought, \"My brother is older and has more to manage,\" and carried his rice the other way! By morning both stacks were just as full as before, and neither could understand why. When they met on the path that night, arms full of rice, they finally laughed — and hugged under the moon."},
+    ko:{title:"의좋은 형제", text:"두 형제가 벼를 거두어 똑같이 나누어 볏단을 쌓았어요. 그런데 그날 밤, 형은 생각했지요. \"동생은 식구가 많으니 더 있어야 해.\" 그러고는 몰래 제 볏단을 동생네 더미로 옮겼어요. 바로 그때, 동생도 생각했지요. \"형님은 맏이라 쓸 데가 많으실 거야.\" 그러고는 제 볏단을 반대로 옮겼어요! 아침이 되자 두 볏단 더미는 어제와 똑같았고, 둘 다 영문을 몰랐지요. 그날 밤 길에서 볏단을 한 아름씩 안은 채 마주친 형제는, 마침내 껄껄 웃으며 달빛 아래 서로를 꼭 끌어안았답니다."}},
+
+  { token:"🐰", shop:{en:"The Tortoise and the Hare Aesop fable picture book", ko:"토끼와 거북이 그림책"},
+    en:{title:"The Tortoise and the Hare", text:"A speedy hare laughed at the slow tortoise. \"You? Race me? Ha!\" So they raced. The hare zoomed so far ahead that he decided to nap under a shady tree. \"I'll still win with my eyes closed,\" he yawned. Meanwhile the tortoise plodded on — step, step, step — never stopping, never giving up. When the hare woke and dashed to the finish, he gasped: the tortoise was already there, smiling. \"Slow and steady,\" said the tortoise kindly, \"wins the race.\" It isn't always the fastest who arrives first — it's the one who keeps going."},
+    ko:{title:"토끼와 거북이", text:"발 빠른 토끼가 느림보 거북이를 비웃었어요. \"네가? 나랑 달리기를? 하하!\" 그래서 둘은 경주를 했지요. 토끼는 저 멀리 앞서가자 그늘진 나무 밑에서 한숨 자기로 했어요. \"눈 감고도 이기겠는걸.\" 하품하며 말했지요. 그동안 거북이는 뚜벅뚜벅, 쉬지 않고, 포기하지 않고 걸었어요. 토끼가 깨어나 결승선으로 내달렸을 때, 깜짝 놀랐어요. 거북이가 벌써 도착해 빙긋 웃고 있었거든요. \"느려도 꾸준하면,\" 거북이가 다정하게 말했어요. \"경주에서 이긴단다.\" 가장 빠른 이가 늘 먼저 닿는 건 아니에요. 끝까지 멈추지 않는 이가 닿는 거랍니다."}},
+
+  /* ── 그리스·세계 신화 ── */
+  { token:"🪽", shop:{en:"Icarus and Daedalus Greek myth picture book", ko:"이카로스와 다이달로스 그리스 신화 그림책"},
+    en:{title:"Icarus and the Wings of Wax", text:"The clever inventor Daedalus built wings of feathers and wax so he and his son Icarus could escape a tall tower by flying. \"Don't fly too low, or the sea spray will soak you,\" he warned, \"and don't fly too high, or the sun will melt the wax.\" Off they soared, free as birds! But young Icarus, dizzy with joy, flew higher and higher toward the dazzling sun — until his wings softened and he tumbled toward the waves. The story reminds us: wonder is a gift, but it's wisest to listen to those who love us and want us safe."},
+    ko:{title:"이카로스의 밀랍 날개", text:"영리한 발명가 다이달로스는 깃털과 밀랍으로 날개를 만들어, 아들 이카로스와 함께 높은 탑에서 날아 탈출하려 했어요. \"너무 낮게 날면 바닷물에 젖고,\" 아버지가 일렀어요. \"너무 높이 날면 해가 밀랍을 녹인단다.\" 둘은 새처럼 자유롭게 날아올랐지요! 하지만 어린 이카로스는 기쁨에 들떠 눈부신 해를 향해 점점 높이 날았어요. 마침내 날개가 녹아내려 그는 파도 쪽으로 떨어지고 말았지요. 이 이야기는 일러 줘요. 설렘은 멋진 선물이지만, 우리를 아끼고 지켜 주려는 이의 말에 귀 기울이는 것이 가장 지혜롭다고요."}},
+
+  { token:"👑", shop:{en:"King Midas golden touch Greek myth picture book", ko:"미다스 왕의 황금 손 그리스 신화 그림책"},
+    en:{title:"King Midas and the Golden Touch", text:"King Midas loved gold more than anything, so he wished that everything he touched would turn to gold. His wish was granted! He touched a rose — gold. A chair — gold. He was overjoyed... until he touched his food and it turned hard and cold, and worst of all, when he hugged his beloved daughter, she froze into a golden statue. Heartbroken, Midas begged for the gift to be taken back. He washed his hands in a river, and his daughter laughed and lived again. \"The things I love,\" he wept with joy, \"are worth more than all the gold in the world.\""},
+    ko:{title:"미다스 왕의 황금 손", text:"미다스 왕은 무엇보다 황금을 사랑해서, 손대는 것마다 금이 되게 해 달라고 소원을 빌었어요. 소원이 이루어졌지요! 장미를 만지니 금, 의자를 만지니 금이 됐어요. 뛸 듯이 기뻤지만, 음식을 만지자 딱딱하게 굳고 차가워졌고, 무엇보다 사랑하는 딸을 끌어안자 딸이 황금 조각상으로 굳어 버렸어요. 가슴이 찢어진 미다스는 그 능력을 거두어 달라고 빌었지요. 강물에 손을 씻자, 딸이 까르르 웃으며 다시 살아났어요. \"내가 사랑하는 것들은,\" 미다스가 기쁨의 눈물을 흘리며 말했어요. \"세상의 모든 황금보다 값지구나.\""}},
+
+  { token:"📦", shop:{en:"Pandora's Box Greek myth picture book", ko:"판도라의 상자 그리스 신화 그림책"},
+    en:{title:"Pandora and the Last Gift", text:"Pandora was given a beautiful box with one rule: never open it. But curiosity tickled her so terribly that one day she lifted the lid — just a peek! Out swirled all the world's troubles: worry, sorrow, and gloom, scattering far and wide. Frightened, she slammed it shut. But a tiny, glowing something still fluttered inside, knocking softly. She opened the lid once more, and out floated the gentlest light of all: Hope. So even when troubles fill the world, Pandora learned, Hope is always there, fluttering quietly, ready to lift our hearts again."},
+    ko:{title:"판도라의 상자와 마지막 선물", text:"판도라는 아름다운 상자를 받으며 단 하나의 약속을 들었어요. 절대 열지 말 것. 하지만 호기심이 너무도 간질간질해서, 어느 날 살짝 뚜껑을 열어 보았지요. 그러자 세상의 온갖 근심거리가 소용돌이치며 쏟아져 나왔어요. 걱정과 슬픔과 우울이 사방으로 흩어졌지요. 겁이 난 판도라는 뚜껑을 쾅 닫았어요. 그런데 안에서 작고 환한 무언가가 똑똑 부드럽게 두드렸어요. 다시 뚜껑을 열자, 가장 다정한 빛이 살포시 떠올랐어요. 바로 희망이었지요. 세상에 근심이 가득해도, 희망은 늘 곁에서 우리 마음을 다시 일으켜 준다는 걸 판도라는 알게 되었답니다."}},
+
+  { token:"🕸️", shop:{en:"Arachne the weaver Greek myth spider picture book", ko:"아라크네 거미 그리스 신화 그림책"},
+    en:{title:"Arachne the Weaver", text:"Arachne was the finest weaver in all the land, and she knew it. \"No one weaves better than I — not even the gods!\" she boasted. The goddess Athena heard and challenged her to a weaving contest. Arachne's cloth was breathtaking, woven with shimmering threads and lifelike scenes. But her boasting had been unkind. With a gentle touch, Athena turned her into a tiny spider, so she could spin and weave forever. And to this day, spiders weave delicate, dazzling webs at dawn — a reminder that great talent shines brightest when carried with a humble, kind heart."},
+    ko:{title:"베 짜는 아라크네", text:"아라크네는 온 나라에서 가장 솜씨 좋은 베 짜는 이였고, 스스로도 그걸 잘 알았어요. \"나보다 잘 짜는 이는 없어. 신들도 못 따라오지!\" 그녀가 으스댔지요. 그 말을 들은 여신 아테나가 베 짜기 시합을 청했어요. 아라크네의 천은 반짝이는 실과 살아 있는 듯한 그림으로 숨이 멎을 만큼 아름다웠지요. 하지만 그 자랑은 너무 거만했어요. 아테나는 살며시 손을 대어 그녀를 작은 거미로 만들어, 영원히 실을 잣고 베를 짜게 했답니다. 그래서 지금도 거미들은 새벽이면 섬세하고 눈부신 거미줄을 짜요. 큰 재능은 겸손하고 다정한 마음과 함께일 때 가장 빛난다는 걸 일러 주면서요."}},
+
+  { token:"🔥", shop:{en:"The Phoenix firebird myth picture book", ko:"불사조 피닉스 신화 그림책"},
+    en:{title:"The Phoenix and the New Dawn", text:"Far away lived the Phoenix, a magnificent bird with feathers of flame and gold. It lived for hundreds of years, singing the most beautiful song the world had ever heard. When at last it grew old and tired, it did not fear the end. It built a nest of sweet spices, and in a burst of warm light, it became glowing embers. But that was not goodbye! From the soft ashes, a brand-new Phoenix rose, bright and young, and lifted into the sky. Endings, the Phoenix knew, can be the most beautiful beginnings of all."},
+    ko:{title:"불사조와 새로운 아침", text:"먼 곳에 불꽃과 황금빛 깃털을 가진 눈부신 새, 불사조가 살았어요. 수백 년을 살며 세상에서 가장 아름다운 노래를 불렀지요. 마침내 늙고 지쳤을 때, 불사조는 끝을 두려워하지 않았어요. 향기로운 향료로 둥지를 짓고, 따뜻한 빛과 함께 반짝이는 잿불이 되었지요. 하지만 그건 작별이 아니었어요! 부드러운 잿더미 속에서 환하고 어린 새 불사조가 솟아올라 하늘로 날아올랐어요. 끝은 가장 아름다운 시작이 될 수 있다는 걸, 불사조는 알고 있었답니다."}},
+
+  { token:"🐎", shop:{en:"Pegasus winged horse Greek myth picture book", ko:"날개 달린 말 페가수스 그리스 신화 그림책"},
+    en:{title:"Pegasus, the Winged Horse", text:"Pegasus was a wondrous white horse with great feathered wings who galloped across the sky. He was wild and free, and no one could catch him — until a kind young hero named Bellerophon brought him a golden bridle, not to trap him, but to offer friendship. Pegasus, sensing his gentle heart, lowered his wings and let the boy climb on. Together they soared above mountains and clouds, helping people far below. When their adventures were done, Pegasus flew up among the stars, where you can still find him sparkling — the horse who chose a friend over freedom alone."},
+    ko:{title:"날개 달린 말 페가수스", text:"페가수스는 커다란 깃털 날개를 단 눈부신 흰 말로, 하늘을 가로질러 달렸어요. 거칠고 자유로워서 아무도 붙잡을 수 없었지요. 벨레로폰이라는 마음씨 고운 젊은 영웅이 황금 굴레를 가져오기 전까지는요. 가두려는 게 아니라 친구가 되자는 마음이었어요. 그 다정함을 느낀 페가수스는 날개를 낮춰 소년을 등에 태웠지요. 둘은 함께 산과 구름 위를 날며 저 아래 사람들을 도왔어요. 모험이 끝나자 페가수스는 별들 사이로 날아올랐고, 지금도 반짝이며 그곳에 있답니다. 홀로 누리는 자유보다 친구를 택한 말이지요."}},
+
+  { token:"🌸", shop:{en:"Persephone seasons Greek myth picture book", ko:"페르세포네 사계절 그리스 신화 그림책"},
+    en:{title:"Persephone and the Seasons", text:"Persephone was the daughter of the harvest goddess, and wherever she danced, flowers bloomed. One day she was taken to the underworld to be its queen. Her mother grieved so deeply that the whole earth grew cold and bare — the very first winter. At last it was agreed: Persephone would spend part of the year below, and part above. So each spring, when she returns to her mother, the world bursts into blossom with joy. And each autumn, when she goes again, the leaves drift down in a gentle, golden goodbye — until she comes home once more."},
+    ko:{title:"페르세포네와 사계절", text:"페르세포네는 추수의 여신의 딸로, 그녀가 춤추는 곳마다 꽃이 피어났어요. 어느 날 그녀는 지하 세계로 가서 그곳의 여왕이 되었지요. 어머니가 너무도 슬퍼한 나머지 온 땅이 차갑고 메말라졌어요. 세상 첫 겨울이었지요. 마침내 약속이 정해졌어요. 페르세포네는 한 해의 얼마는 지하에서, 얼마는 땅 위에서 지내기로요. 그래서 봄마다 그녀가 어머니에게 돌아오면 세상은 기쁨에 겨워 꽃을 활짝 피워요. 가을마다 그녀가 다시 떠나면 나뭇잎이 부드러운 금빛 작별을 하며 흩날리지요. 그녀가 다시 집에 올 때까지요."}},
+
+  /* ── 이솝 우화 ── */
+  { token:"🦁", shop:{en:"The Lion and the Mouse Aesop fable picture book", ko:"사자와 생쥐 이솝우화 그림책"},
+    en:{title:"The Lion and the Mouse", text:"A tiny mouse accidentally scampered across a sleeping lion's nose. The lion woke with a roar and caught him. \"Please let me go,\" squeaked the mouse, \"and someday I'll help you!\" The lion laughed at the idea but let the little fellow scurry off. Days later, the lion was caught in a hunter's net, roaring helplessly. The mouse heard, ran over, and gnawed through the thick ropes — snip, snip, snip — until the great lion was free. \"You see?\" smiled the mouse. \"Even the smallest friend can do a mighty kindness.\""},
+    ko:{title:"사자와 생쥐", text:"작은 생쥐가 그만 잠든 사자의 코 위를 쪼르르 지나갔어요. 사자가 으르렁 깨어나 생쥐를 붙잡았지요. \"제발 살려 주세요.\" 생쥐가 찍찍거렸어요. \"언젠가 제가 도와드릴게요!\" 사자는 그 말이 우스워 껄껄 웃으며 꼬마를 놓아 주었어요. 며칠 뒤, 사자가 사냥꾼의 그물에 걸려 속절없이 울부짖었지요. 그 소리를 들은 생쥐가 달려와 두꺼운 밧줄을 사각사각 갉았어요. 마침내 커다란 사자가 풀려났지요. \"보셨죠?\" 생쥐가 빙긋 웃었어요. \"가장 작은 친구도 아주 큰 도움을 줄 수 있답니다.\""}},
+
+  { token:"🐜", shop:{en:"The Ant and the Grasshopper Aesop fable picture book", ko:"개미와 베짱이 이솝우화 그림책"},
+    en:{title:"The Ant and the Grasshopper", text:"All summer long, the ant worked hard, carrying grain to her nest, while the grasshopper played his fiddle in the warm sun. \"Why work so hard? Come play!\" laughed the grasshopper. \"Winter is coming,\" said the ant, and kept working. When the cold winds blew and snow covered the fields, the grasshopper had nothing to eat — but the ant's pantry was full and warm. Seeing him shiver, the kind ant shared her food and her cozy home. \"Next summer,\" the grasshopper promised, \"I'll gather too — and play you a thank-you song.\" And so he did."},
+    ko:{title:"개미와 베짱이", text:"여름 내내 개미는 부지런히 곡식을 집으로 날랐고, 베짱이는 따스한 햇볕 아래 바이올린을 켜며 놀았어요. \"뭘 그리 애써? 같이 놀자!\" 베짱이가 웃었지요. \"겨울이 오잖아.\" 개미는 그러며 계속 일했어요. 찬 바람이 불고 눈이 들판을 덮자, 베짱이는 먹을 게 하나도 없었어요. 하지만 개미의 곳간은 따뜻하고 가득했지요. 덜덜 떠는 베짱이를 본 착한 개미는 음식과 아늑한 집을 나눠 주었어요. \"다음 여름엔,\" 베짱이가 약속했어요. \"나도 부지런히 모으고, 고마운 마음으로 노래도 들려줄게.\" 그리고 정말 그렇게 했답니다."}},
+
+  { token:"🐺", shop:{en:"The Boy Who Cried Wolf Aesop fable picture book", ko:"양치기 소년 이솝우화 그림책"},
+    en:{title:"The Boy Who Cried Wolf", text:"A young shepherd boy grew bored watching his sheep, so for fun he shouted, \"Wolf! Wolf!\" The villagers came running to help — but there was no wolf, only the boy laughing. He did it again, and again they ran, and again he laughed. But one day a real wolf crept among the sheep! \"Wolf! Wolf!\" the boy cried with all his might. This time, no one came; they thought it was another joke. The boy learned an important lesson that day: when we always tell the truth, people trust us — and trust is a treasure worth keeping."},
+    ko:{title:"양치기 소년", text:"어린 양치기 소년은 양을 지키는 게 심심해서, 장난으로 외쳤어요. \"늑대다! 늑대!\" 마을 사람들이 도우러 달려왔지만, 늑대는 없고 깔깔 웃는 소년뿐이었지요. 또 그러자 또 사람들이 달려왔고, 또 소년은 웃었어요. 그러던 어느 날, 진짜 늑대가 양 떼 사이로 슬그머니 들어왔어요! \"늑대다! 늑대!\" 소년이 있는 힘껏 외쳤지요. 그런데 이번엔 아무도 오지 않았어요. 또 장난인 줄 안 거예요. 그날 소년은 큰 교훈을 얻었어요. 늘 참말을 하면 사람들이 믿어 준다는 것, 그리고 그 믿음은 지킬 가치가 있는 보물이라는 걸요."}},
+
+  { token:"☀️", shop:{en:"The North Wind and the Sun Aesop fable picture book", ko:"해와 바람 이솝우화 그림책"},
+    en:{title:"The North Wind and the Sun", text:"The North Wind and the Sun argued over who was stronger. \"Let's see who can make that traveler take off his coat,\" said the Sun. The North Wind went first, blowing hard and cold — whoosh! — but the traveler only clutched his coat tighter against the chill. Then the Sun smiled and shone down warm and gentle. Soon the traveler grew so cozy and warm that he happily slipped off his coat all by himself. \"You see,\" said the Sun kindly, \"gentleness and warmth can do what force never could.\""},
+    ko:{title:"해와 바람", text:"북풍과 해가 누가 더 센지 다투었어요. \"저 나그네의 외투를 누가 벗기나 보자.\" 해가 말했지요. 북풍이 먼저 차갑고 세차게 휘몰아쳤어요. 휘이잉! 하지만 나그네는 추위에 외투를 더 꽁꽁 여밀 뿐이었지요. 그러자 해가 빙긋 웃으며 따뜻하고 부드럽게 내리쬐었어요. 곧 나그네는 포근하고 더워져서 제 손으로 기분 좋게 외투를 훌훌 벗었지요. \"보았지?\" 해가 다정하게 말했어요. \"부드러움과 따뜻함은 힘으로는 못 하는 일을 해낸단다.\""}},
+
+  { token:"🐦‍⬛", shop:{en:"The Crow and the Pitcher Aesop fable picture book", ko:"까마귀와 물병 이솝우화 그림책"},
+    en:{title:"The Crow and the Pitcher", text:"On a hot, dry day, a thirsty crow found a pitcher with just a little water at the very bottom — too low for his beak to reach. He tried tipping it, but it was too heavy. He nearly gave up. Then he had a clever idea! One by one, he dropped small pebbles into the pitcher: plink, plink, plink. With each pebble, the water rose a little higher, until at last it reached the top and he drank his fill. \"Where strength fails,\" the wise crow cawed happily, \"a good idea will carry the day.\""},
+    ko:{title:"까마귀와 물병", text:"덥고 메마른 날, 목마른 까마귀가 물병을 발견했어요. 그런데 물이 바닥에 조금밖에 없어 부리가 닿지 않았지요. 병을 기울여 봤지만 너무 무거웠어요. 거의 포기할 뻔했지요. 그때 영리한 생각이 떠올랐어요! 까마귀는 작은 조약돌을 하나씩 병에 떨어뜨렸어요. 퐁, 퐁, 퐁. 조약돌을 넣을 때마다 물이 조금씩 차올랐고, 마침내 물이 위로 올라와 까마귀는 실컷 마셨지요. \"힘이 안 될 땐,\" 지혜로운 까마귀가 기쁘게 까악 울었어요. \"좋은 생각이 하루를 구한단다.\""}},
+
+  { token:"🍇", shop:{en:"The Fox and the Grapes Aesop fable picture book", ko:"여우와 신 포도 이솝우화 그림책"},
+    en:{title:"The Fox and the Grapes", text:"A hungry fox spotted a bunch of plump, juicy grapes hanging high on a vine. \"Mmm, perfect!\" he thought, and he jumped — but missed. He jumped again, higher — and missed again. He backed up and took a running leap — still too high! Panting and tired, he finally gave up. As he walked away with his nose in the air, he grumbled, \"Those grapes were probably sour anyway.\" But of course, he never really knew. Sometimes when we can't have something, it's easier to pretend we never wanted it — though it's braver to simply try, try again."},
+    ko:{title:"여우와 신 포도", text:"배고픈 여우가 덩굴 높이 매달린 탐스럽고 즙 많은 포도송이를 발견했어요. \"음, 딱 좋겠는걸!\" 그러고는 폴짝 뛰었지만 닿지 못했어요. 더 높이 뛰어 봐도 또 실패. 뒤로 물러나 달려와 뛰어도 여전히 너무 높았지요! 헉헉대며 지친 여우는 결국 포기했어요. 콧대를 치켜들고 돌아서며 투덜댔지요. \"저 포도, 어차피 시었을 거야.\" 하지만 사실은 끝내 알 수 없었지요. 가질 수 없을 때 처음부터 원하지 않은 척하는 게 편할 때도 있어요. 그래도 다시 한번 해 보는 것이 더 용감한 일이랍니다."}},
+
+  { token:"🥚", shop:{en:"The Goose and the Golden Eggs Aesop fable picture book", ko:"황금알을 낳는 거위 이솝우화 그림책"},
+    en:{title:"The Goose and the Golden Eggs", text:"A farmer and his wife owned a wonderful goose that laid one shining golden egg every single day. They grew quite rich and happy. But soon they grew greedy. \"If we cut the goose open,\" they thought, \"we'll get ALL the gold at once!\" So they did — and found nothing inside but an ordinary goose, and now no more eggs at all. Sitting amid their foolishness, they sighed. They had had a perfect gift of one golden egg a day, but by grasping for everything at once, they lost the gentle blessing they already had."},
+    ko:{title:"황금알을 낳는 거위", text:"한 농부 부부가 날마다 반짝이는 황금알을 하나씩 낳는 신기한 거위를 길렀어요. 부부는 제법 부자가 되어 행복했지요. 하지만 곧 욕심이 났어요. \"거위 배를 가르면 황금을 한꺼번에 몽땅 얻겠지!\" 그래서 정말 그렇게 했지만, 안에는 평범한 거위뿐이었고, 이제 알도 더는 나오지 않았어요. 어리석음 속에 주저앉은 부부는 땅이 꺼지게 한숨지었지요. 날마다 황금알 하나라는 완벽한 선물이 있었는데, 한꺼번에 다 가지려다 이미 가진 다정한 복마저 잃고 만 거예요."}},
+
+  { token:"🏠", shop:{en:"The Town Mouse and the Country Mouse Aesop fable picture book", ko:"시골 쥐와 도시 쥐 이솝우화 그림책"},
+    en:{title:"The Town Mouse and the Country Mouse", text:"A country mouse invited his city cousin for a simple meal of seeds and roots. \"How plain!\" said the town mouse. \"Come see how I dine in the city!\" So they went, and feasted on cheese and cake in a grand house — until a great cat pounced, and they barely escaped, hearts pounding! The country mouse caught his breath and said, \"Cousin, I'd rather nibble seeds in peace than feast in fear.\" And home he scampered, to his quiet field and his simple, happy supper. A calm life of little can be richer than a grand life of worry."},
+    ko:{title:"시골 쥐와 도시 쥐", text:"시골 쥐가 도시에 사는 사촌을 불러 씨앗과 뿌리로 소박한 밥상을 차렸어요. \"이렇게 초라하다니!\" 도시 쥐가 말했지요. \"내가 도시에서 어떻게 먹는지 와서 봐!\" 그래서 둘은 으리으리한 집에서 치즈와 케이크로 잔치를 벌였어요. 그런데 커다란 고양이가 덮쳐서, 둘은 가슴을 졸이며 가까스로 달아났지요! 숨을 고른 시골 쥐가 말했어요. \"사촌, 난 무서워하며 잔치하느니 마음 편히 씨앗을 갉을래.\" 그러고는 조용한 들판의 소박하고 행복한 저녁상으로 쪼르르 돌아갔답니다. 걱정 가득한 화려함보다, 잔잔한 작은 삶이 더 풍요로울 수 있어요."}},
+
+  /* ── 세계 동화·전설 ── */
+  { token:"🦢", shop:{en:"The Ugly Duckling Andersen fairy tale picture book", ko:"미운 오리 새끼 그림책"},
+    en:{title:"The Ugly Duckling", text:"In a cozy nest, all the ducklings were small and yellow — except one, who was big and gray. \"How odd you look!\" the others teased, and the poor little bird felt so lonely. He wandered off through the seasons, cold and sad, sure that he didn't belong anywhere. But when spring came, he saw his reflection in a clear pond and gasped: he had grown into a graceful, beautiful swan! The other swans welcomed him warmly. He hadn't been ugly at all — he had simply been growing into exactly who he was always meant to be."},
+    ko:{title:"미운 오리 새끼", text:"아늑한 둥지에서 새끼 오리들은 모두 작고 노랬어요. 딱 한 마리, 크고 잿빛인 아기만 빼고요. \"넌 참 이상하게 생겼어!\" 다른 오리들이 놀려서, 가엾은 아기 새는 너무도 외로웠지요. 아기 새는 춥고 슬프게 계절을 떠돌며, 자기는 어디에도 속하지 못한다고 여겼어요. 그런데 봄이 오자 맑은 연못에 비친 제 모습을 보고 깜짝 놀랐어요. 우아하고 아름다운 백조로 자라 있었거든요! 다른 백조들이 따뜻하게 맞아 주었지요. 그는 미운 게 아니었어요. 그저 본래 되어야 할 자기 모습으로 자라고 있었던 거랍니다."}},
+
+  { token:"👑", shop:{en:"The Emperor's New Clothes Andersen fairy tale picture book", ko:"벌거벗은 임금님 그림책"},
+    en:{title:"The Emperor's New Clothes", text:"Two sly tailors promised a vain emperor the finest clothes in the world — magical cloth invisible to anyone foolish. Of course, there was no cloth at all! But no one dared admit they saw nothing, for fear of seeming foolish. So the emperor paraded proudly through town wearing... nothing but his underclothes. The crowd oohed and aahed, pretending. Then a small child pointed and laughed, \"But he isn't wearing anything!\" And everyone realized the truth at last. Sometimes it takes the honest, fearless voice of a child to remind grown-ups what is plainly true."},
+    ko:{title:"벌거벗은 임금님", text:"교활한 재단사 둘이 허영심 많은 임금님에게 세상에서 가장 멋진 옷을 약속했어요. 어리석은 사람 눈에는 안 보이는 마법의 천이라면서요. 물론 천 같은 건 처음부터 없었지요! 하지만 아무도 안 보인다고 말하지 못했어요. 바보처럼 보일까 봐서요. 그래서 임금님은 속옷 차림으로 당당하게 거리를 행진했어요. 사람들은 보이는 척 \"우아!\" 감탄했지요. 그때 한 어린아이가 손가락질하며 깔깔 웃었어요. \"임금님이 아무것도 안 입었잖아요!\" 그제야 모두가 진실을 깨달았지요. 뻔한 진실을 일깨우는 데엔, 때로 솔직하고 용감한 아이의 목소리 하나면 충분하답니다."}},
+
+  { token:"🍑", shop:{en:"Momotaro Peach Boy Japanese folktale picture book", ko:"모모타로 복숭아 동자 일본 전래동화 그림책"},
+    en:{title:"Momotaro, the Peach Boy", text:"An old woman found an enormous peach floating down the river. When she and her husband cut it open — surprise! — out popped a happy, healthy baby boy. They named him Momotaro and loved him dearly. When he grew up, he set off to help a village troubled by mischievous ogres. Along the way he shared his rice cakes with a dog, a monkey, and a pheasant, who became his loyal friends. Together they gently set things right and brought back peace. Momotaro learned that sharing kindness turns strangers into friends, and friends make any journey possible."},
+    ko:{title:"복숭아 동자 모모타로", text:"한 할머니가 강물에 둥둥 떠내려오는 커다란 복숭아를 건졌어요. 할아버지와 함께 복숭아를 가르자, 짠! 건강하고 밝은 사내 아기가 톡 튀어나왔지요. 둘은 아기에게 모모타로라는 이름을 지어 주고 무척 사랑했어요. 아이가 자라자, 짓궂은 도깨비들 때문에 시달리는 마을을 도우러 길을 떠났지요. 가는 길에 모모타로는 수수경단을 개와 원숭이와 꿩에게 나눠 주었고, 그들은 충직한 친구가 되었어요. 함께 힘을 모아 부드럽게 일을 바로잡고 평화를 되찾았지요. 모모타로는 알았어요. 친절을 나누면 낯선 이가 친구가 되고, 친구가 있으면 어떤 여정도 해낼 수 있다는 걸요."}},
+
+  { token:"🕊️", shop:{en:"The Crane Wife Japanese folktale picture book", ko:"학의 보은 일본 전래동화 그림책"},
+    en:{title:"The Grateful Crane", text:"A gentle man once freed a crane caught in a trap, asking nothing in return. Soon after, a kind woman appeared at his door and they were happily married. She wove the most beautiful cloth he had ever seen, asking only that he never watch her work. For a long time he kept his promise and they lived well. The cloth, it turned out, was woven from her own crane feathers, as thanks for his kindness. When the time came, she spread her wings and flew home to the sky — but she left behind a gift of love that warmed him always."},
+    ko:{title:"학의 보은", text:"마음씨 고운 한 남자가 덫에 걸린 학을 아무 대가도 바라지 않고 풀어 주었어요. 얼마 뒤, 어진 여인이 그의 집을 찾아왔고 둘은 행복하게 부부가 되었지요. 여인은 그가 본 것 중 가장 아름다운 천을 짰는데, 단 하나, 베 짜는 모습을 절대 보지 말라고 했어요. 오래도록 그는 약속을 지켰고 둘은 잘 살았지요. 그 천은 사실 남자의 친절에 보답하려고 여인이 제 학 깃털을 뽑아 짠 것이었어요. 때가 되자 여인은 날개를 펼쳐 하늘 집으로 돌아갔지요. 하지만 늘 그를 따뜻하게 감싸 줄 사랑의 선물을 남기고 떠났답니다."}},
+
+  { token:"🥘", shop:{en:"Stone Soup folktale picture book", ko:"돌멩이 수프 그림책"},
+    en:{title:"Stone Soup", text:"A hungry traveler came to a village where no one would share any food. So he set a big pot of water to boil, dropped in a smooth stone, and stirred. \"Mmm, stone soup — delicious! Though a carrot would make it even better...\" Curious, a villager brought a carrot. \"And perhaps a potato?\" Another brought one. Onions, beans, herbs — bit by bit, everyone added something. Soon the pot held a rich, hearty soup, and the whole village sat down to share it together, laughing. The clever traveler smiled. \"When everyone gives a little, there is plenty for all.\""},
+    ko:{title:"돌멩이 수프", text:"배고픈 나그네가 아무도 음식을 나누려 하지 않는 마을에 왔어요. 그래서 큰 솥에 물을 끓이고 매끈한 돌멩이 하나를 넣어 휘휘 저었지요. \"음, 돌멩이 수프, 맛있겠는걸! 당근을 넣으면 더 좋을 텐데...\" 호기심이 난 한 사람이 당근을 가져왔어요. \"감자도 하나 있으면?\" 또 누군가 가져왔지요. 양파, 콩, 향초까지, 조금씩 다들 뭔가를 보탰어요. 곧 솥에는 진하고 푸짐한 수프가 가득했고, 온 마을이 둘러앉아 깔깔 웃으며 함께 나눠 먹었지요. 영리한 나그네가 빙긋 웃었어요. \"다들 조금씩 보태면, 모두에게 넉넉하답니다.\""}},
+
+  { token:"🐷", shop:{en:"The Three Little Pigs fairy tale picture book", ko:"아기 돼지 삼형제 그림책"},
+    en:{title:"The Three Little Pigs", text:"Three little pigs each built a house. The first made his of straw, quick and easy. The second made his of sticks. But the third worked hard and built his of sturdy bricks. Along came a hungry wolf. He huffed and puffed and blew down the straw house, then the stick house — and the two pigs ran to their brother's. At the brick house, the wolf huffed and puffed with all his might, but it would not budge! Tired out, he gave up and wandered off. \"Hard work,\" said the third pig, \"builds something that lasts.\""},
+    ko:{title:"아기 돼지 삼형제", text:"아기 돼지 삼형제가 저마다 집을 지었어요. 첫째는 후딱 짚으로, 둘째는 나뭇가지로 지었지요. 하지만 셋째는 부지런히 튼튼한 벽돌로 집을 지었어요. 그때 배고픈 늑대가 나타났어요. 늑대가 후우 불자 짚 집이 폭삭, 또 후우 불자 나뭇가지 집이 와르르 무너졌고, 두 형제는 셋째네로 달아났지요. 벽돌집 앞에서 늑대가 있는 힘껏 후우후우 불었지만, 끄떡도 하지 않았어요! 지쳐 버린 늑대는 포기하고 어슬렁어슬렁 떠났지요. \"부지런히 한 일은,\" 셋째 돼지가 말했어요. \"오래가는 걸 만든단다.\""}},
+
+  { token:"🔴", shop:{en:"Little Red Riding Hood fairy tale picture book", ko:"빨간 모자 그림책"},
+    en:{title:"Little Red Riding Hood", text:"A girl in a red hood set off through the woods to bring cakes to her grandmother. \"Stay on the path,\" her mother had said. But a sly wolf met her and learned where she was going. He hurried ahead and slipped into Grandma's cottage. When Red Riding Hood arrived, she noticed something odd. \"Grandmother, what big eyes you have!\" Just then a brave woodcutter passing by heard her worried voice, stepped in, and chased the startled wolf far away. Grandma was safe and sound, and they all shared the cakes. \"Next time,\" Red smiled, \"I'll be watchful on the path.\""},
+    ko:{title:"빨간 모자", text:"빨간 모자를 쓴 여자아이가 할머니께 빵을 가져다드리러 숲길을 나섰어요. \"길에서 벗어나지 말렴.\" 엄마가 일렀지요. 그런데 교활한 늑대가 아이를 만나 어디로 가는지 알아냈어요. 늑대는 앞질러 달려가 할머니 오두막으로 슬그머니 들어갔지요. 빨간 모자가 도착해 보니 뭔가 이상했어요. \"할머니, 눈이 왜 이렇게 커요?\" 바로 그때, 지나가던 용감한 나무꾼이 아이의 걱정스러운 목소리를 듣고 들어와, 깜짝 놀란 늑대를 멀리 쫓아냈어요. 할머니는 무사했고, 다 함께 빵을 나눠 먹었지요. \"다음엔,\" 빨간 모자가 빙긋 웃었어요. \"길에서 조심할래요.\""}},
+
+  { token:"🖌️", shop:{en:"The Magic Paintbrush Ma Liang Chinese folktale picture book", ko:"요술 붓 마량 중국 전래동화 그림책"},
+    en:{title:"The Magic Paintbrush", text:"A poor but kind boy named Ma Liang loved to paint, though he had no brush. One night an old sage gave him a magic brush in a dream — and lo, whatever he painted came to life! He painted a plow for a tired farmer, water for a dry field, and food for the hungry. He used his gift only to help others. When a greedy ruler demanded he paint a mountain of gold, clever Ma Liang painted instead a great sea, then a little boat, then a mighty wind — and sailed the greedy man far, far away. A gift is best used for good."},
+    ko:{title:"요술 붓 마량", text:"가난하지만 마음씨 고운 마량이라는 소년은 붓이 없어도 그림 그리기를 사랑했어요. 어느 밤 꿈에서 노인이 요술 붓을 주었는데, 글쎄 그리는 것마다 살아났지 뭐예요! 마량은 지친 농부에게 쟁기를, 메마른 밭에 물을, 굶주린 이에게 음식을 그려 주었어요. 오직 남을 돕는 데에만 그 재주를 썼지요. 욕심 많은 임금이 황금 산을 그리라 윽박지르자, 영리한 마량은 대신 드넓은 바다를 그리고, 작은 배를 그리고, 거센 바람을 그려, 욕심쟁이를 저 멀리멀리 떠내려 보냈답니다. 재주는 좋은 일에 쓸 때 가장 빛난답니다."}},
+
+  { token:"🕷️", shop:{en:"Anansi the Spider African folktale picture book", ko:"거미 아난시 아프리카 전래동화 그림책"},
+    en:{title:"Anansi and the Wisdom Pot", text:"Clever Anansi the spider gathered all the wisdom in the world into a great pot, planning to keep it for himself. He tried to climb a tall tree to hide it, tying the pot to his front — but it kept getting in the way, and he couldn't climb at all. His little son called up, \"Father, why not tie the pot to your back?\" Anansi blinked. The child was right! In his surprise, the pot slipped and shattered, and wisdom scattered on the wind to every corner of the earth. And that is why, to this day, a little wisdom lives in everyone."},
+    ko:{title:"거미 아난시와 지혜 항아리", text:"영리한 거미 아난시는 세상의 모든 지혜를 큰 항아리에 모아 혼자 차지하려 했어요. 항아리를 가슴에 묶고 높은 나무에 숨기러 올라가려 했지만, 자꾸 걸리적거려서 도무지 오를 수가 없었지요. 그러자 어린 아들이 외쳤어요. \"아버지, 항아리를 등에 묶으면 되잖아요?\" 아난시는 눈을 끔뻑였어요. 아이 말이 옳았거든요! 깜짝 놀란 순간 항아리가 미끄러져 와장창 깨졌고, 지혜가 바람을 타고 땅끝까지 흩어졌지요. 그래서 오늘날까지 누구에게나 조금씩 지혜가 깃들어 있는 거랍니다. 가장 어린 친구에게도요."}},
+
+  { token:"🌜", shop:{en:"Chang'e moon goddess Chinese myth picture book", ko:"항아 달의 여신 중국 신화 그림책"},
+    en:{title:"Chang'e and the Moon", text:"Long ago, a brave archer was given a magic potion that could lift a person up to live among the stars. He saved it to share one day with his beloved wife, Chang'e. But one evening, to keep the potion safe from a thief, Chang'e bravely drank it herself. At once she felt light as a feather and drifted gently up, up, all the way to the Moon, where she still lives today with a little jade rabbit. Each autumn, people gaze up at the bright full Moon, share round mooncakes, and remember her — the gentle lady who watches over us from above."},
+    ko:{title:"달의 여신 항아", text:"옛날 옛적, 용감한 활잡이가 사람을 별들 사이로 올려 보내는 신비한 약을 받았어요. 그는 언젠가 사랑하는 아내 항아와 나누려고 약을 고이 간직했지요. 그런데 어느 저녁, 도둑에게서 약을 지키려고 항아가 용감하게 직접 약을 마셨어요. 그러자 몸이 깃털처럼 가벼워져 위로, 위로, 달까지 사뿐히 떠올랐지요. 항아는 지금도 옥토끼와 함께 달에 산대요. 가을마다 사람들은 밝고 둥근 보름달을 올려다보며 동그란 월병을 나눠 먹고, 위에서 우리를 지켜보는 그 다정한 여인을 떠올린답니다."}},
+
+  { token:"🐉", shop:{en:"The Monkey King Journey to the West Chinese folktale picture book", ko:"손오공 서유기 중국 전래동화 그림책"},
+    en:{title:"The Stone Monkey King", text:"From a magic stone on a mountaintop, a lively monkey was born. He was so bold and clever that the other monkeys made him their king. Wanting to be truly great, he set off to learn magic, and soon he could leap across clouds, change his shape, and tumble somersaults across the whole sky! But all his power made him proud and reckless, and he caused quite a mess. A wise teacher helped him see that real strength means using your gifts to help others, not just to show off. And so the Monkey King became a true hero at last."},
+    ko:{title:"돌에서 태어난 손오공", text:"산꼭대기 신비한 돌에서 활기찬 원숭이 한 마리가 태어났어요. 어찌나 당차고 영리한지 다른 원숭이들이 그를 왕으로 삼았지요. 정말 위대해지고 싶었던 손오공은 도술을 배우러 떠났고, 곧 구름을 훌쩍 뛰어넘고, 모습을 바꾸고, 온 하늘을 공중제비로 누볐어요! 하지만 그 큰 힘에 우쭐해져 함부로 굴다가 큰 소동을 일으켰지요. 지혜로운 스승이 일깨워 주었어요. 진짜 힘이란 뽐내는 게 아니라, 가진 재주로 남을 돕는 거라고요. 그렇게 손오공은 마침내 참된 영웅이 되었답니다."}},
+
+];
+
+/* ================================================================
+   3) UI TEXT (English / Korean)
+   ================================================================ */
+const I18N = {
+  en: {
+    htmlLang: "en",
+    title: "Tell Me a Story — a one-minute story, any time they ask",
+    brand: "Tell Me a Story",
+    prompt: ["“", "Tell me a story!", "”"],
+    sub: "One tap. One little story. About a minute long.",
+    drawFirst: "Tell me a story",
+    drawAgain: "Another one →",
+    speak: "Read aloud",
+    stop: "Stop",
+    cta: "📚 Loved it? Find more stories like this →",
+    countLabel: "stories told this visit",
+    disclosure: "As an Amazon Associate, this site may earn from qualifying purchases.",
+    contact: "Contact",
+    voiceLang: "en-US"
+  },
+  ko: {
+    htmlLang: "ko",
+    title: "이야기 하나 해줘 — 「이야기 해줘」 할 때, 일분 이야기 하나",
+    brand: "이야기 하나 해줘",
+    prompt: ["「", "이야기 하나 해줘!", "」"],
+    sub: "한 번 누르면, 짧은 이야기 하나. 약 1분 길이예요.",
+    drawFirst: "이야기 하나 들려줘",
+    drawAgain: "다른 이야기 →",
+    speak: "읽어 주기",
+    stop: "멈추기",
+    cta: "📚 재밌었나요? 비슷한 이야기책 보러가기 →",
+    countLabel: "개의 이야기를 들었어요",
+    disclosure: "이 사이트는 쿠팡 파트너스 활동의 일환으로 일정 수수료를 받을 수 있어요.",
+    contact: "문의하기",
+    voiceLang: "ko-KR"
+  }
+};
+
+/* ================================================================
+   4) APP LOGIC
+   ================================================================ */
+const els = {
+  brand: document.getElementById("brand"),
+  langEn: document.getElementById("lang-en"),
+  langKo: document.getElementById("lang-ko"),
+  empty: document.getElementById("empty"),
+  promptLine: document.getElementById("prompt-line"),
+  subLine: document.getElementById("sub-line"),
+  card: document.getElementById("card"),
+  token: document.getElementById("story-token"),
+  storyTitle: document.getElementById("story-title"),
+  storyBody: document.getElementById("story-body"),
+  speakBtn: document.getElementById("speak-btn"),
+  speakLabel: document.getElementById("speak-label"),
+  cta: document.getElementById("cta"),
+  draw: document.getElementById("draw"),
+  count: document.getElementById("count"),
+  countLabel: document.getElementById("count-label"),
+  disclosure: document.getElementById("disclosure"),
+  contact: document.getElementById("contact")
+};
+
+let lang = "en";          // default language
+let current = null;       // current story index
+let lastIndex = -1;       // avoid immediate repeats
+let told = 0;             // session counter
+
+function applyLanguage() {
+  const t = I18N[lang];
+  document.documentElement.lang = t.htmlLang;
+  document.title = t.title;
+  els.brand.textContent = t.brand;
+  els.promptLine.innerHTML =
+    '<span class="quiet">' + t.prompt[0] + '</span>' + t.prompt[1] +
+    '<span class="quiet">' + t.prompt[2] + '</span>';
+  els.subLine.textContent = t.sub;
+  els.draw.textContent = current === null ? t.drawFirst : t.drawAgain;
+  els.countLabel.textContent = t.countLabel;
+  els.count.textContent = told;
+  els.disclosure.textContent = t.disclosure;
+  els.contact.textContent = t.contact;
+  els.langEn.classList.toggle("active", lang === "en");
+  els.langKo.classList.toggle("active", lang === "ko");
+  stopSpeaking();
+  els.speakLabel.textContent = t.speak;
+  if (current !== null) renderStory(current, false); // re-render in new language
+}
+
+function pickRandom() {
+  if (STORIES.length === 1) return 0;
+  let i;
+  do { i = Math.floor(Math.random() * STORIES.length); } while (i === lastIndex);
+  lastIndex = i;
+  return i;
+}
+
+function renderStory(index, isNew) {
+  const s = STORIES[index][lang];
+  els.token.textContent = STORIES[index].token;
+  els.storyTitle.textContent = s.title;
+  els.storyBody.textContent = s.text;
+  els.cta.textContent = I18N[lang].cta;
+  var base = lang === "en"
+    ? window.SITE_CONFIG.affiliate.amazon
+    : window.SITE_CONFIG.affiliate.coupang;
+  var kw = (STORIES[index].shop && STORIES[index].shop[lang])
+    ? STORIES[index].shop[lang]
+    : (lang === "en" ? "children's picture book" : "어린이 그림책");
+  els.cta.href = base.indexOf("{q}") !== -1
+    ? base.replace("{q}", encodeURIComponent(kw))
+    : base;
+
+  els.empty.style.display = "none";
+  els.card.style.display = "block";
+  els.draw.textContent = I18N[lang].drawAgain;
+
+  if (isNew) {
+    els.card.classList.remove("reveal");
+    void els.card.offsetWidth; // restart animation
+    els.card.classList.add("reveal");
+  }
+}
+
+function drawStory() {
+  stopSpeaking();
+  current = pickRandom();
+  told += 1;
+  els.count.textContent = told;
+  renderStory(current, true);
+  track("story_view", { story_index: current, story_title: STORIES[current].en.title, lang: lang });
+}
+
+/* ---- Read aloud (Web Speech API) ---- */
+let speaking = false;
+function stopSpeaking() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  speaking = false;
+  els.speakBtn.classList.remove("speaking");
+  els.speakLabel.textContent = I18N[lang].speak;
+}
+function toggleSpeak() {
+  if (!window.speechSynthesis) return;
+  if (speaking) { stopSpeaking(); return; }
+  const s = STORIES[current][lang];
+  const u = new SpeechSynthesisUtterance(s.title + ". " + s.text);
+  u.lang = I18N[lang].voiceLang;
+  u.rate = 0.95; u.pitch = 1.05;
+  const voices = window.speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang && v.lang.indexOf(I18N[lang].voiceLang.slice(0,2)) === 0);
+  if (match) u.voice = match;
+  u.onend = stopSpeaking;
+  u.onerror = stopSpeaking;
+  window.speechSynthesis.speak(u);
+  speaking = true;
+  els.speakBtn.classList.add("speaking");
+  els.speakLabel.textContent = I18N[lang].stop;
+  track("read_aloud", { story_index: current, lang: lang });
+}
+
+/* ---- Events ---- */
+els.draw.addEventListener("click", drawStory);
+els.speakBtn.addEventListener("click", toggleSpeak);
+els.langEn.addEventListener("click", () => { lang = "en"; applyLanguage(); });
+els.langKo.addEventListener("click", () => { lang = "ko"; applyLanguage(); });
+els.cta.addEventListener("click", () => {
+  track("affiliate_click", {
+    store: lang === "en" ? "amazon" : "coupang",
+    lang: lang,
+    story_index: current
+  });
+});
+// Some browsers load voices late
+if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = function () {};
+
+applyLanguage();
+</script>
+</body>
+</html>
