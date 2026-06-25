@@ -123,7 +123,29 @@
     width: 12px; height: 12px; border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
   }
-
+/* OnlyOne landing link */
+  .oo-link {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 4px 11px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+    text-decoration: none;
+    background: var(--hairline);
+    border-radius: 999px;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  }
+  .oo-link:hover {
+    color: var(--ink);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+  }
+  .oo-arrow { margin-left: 3px; font-size: 0.72em; }
+  
   .segmented {
     display: inline-flex;
     background: var(--hairline);
@@ -308,7 +330,14 @@
 <body>
   <div class="wrap">
     <header class="topbar">
-      <div class="brand"><span class="dot" aria-hidden="true"></span><span id="brand">Tell Me a Story</span></div>
+      <!-- <div class="brand"><span class="dot" aria-hidden="true"></span><span id="brand">Tell Me a Story</span></div> -->
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="brand">Tell Me a Story</span>
+        <a class="oo-link" href="https://main.onlyonecorpceo.workers.dev/"
+           target="_blank" rel="noopener"
+           onclick="track('onlyone_click')">OnlyOne&#8202;<span class="oo-arrow" aria-hidden="true">↗</span></a>
+      </div>
       <div class="segmented" role="group" aria-label="Language">
         <button id="lang-en" class="active" type="button">English</button>
         <button id="lang-ko" type="button">한국어</button>
